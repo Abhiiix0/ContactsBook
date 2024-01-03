@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Book</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    }
+    body {
+      background-color: black;
+      color: white;
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      align-items: center;
+    }
+    body .container {
+      background-color: rgb(18, 146, 146);
+      height: 100%;
+      width: 450px;
+      padding: 10px;
+      overflow: hidden;
+    }
+    body #title {
+      padding: 10px 0;
+    }
+    body .container section {
+      /* border: 1px solid; */
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    .add-contact {
+      width: 99.9%;
+    }
+    #search {
+      margin-top: 10px;
+    }
+    .add-contact form input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      height: 32px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      border: none;
+      /* background-color: black; */
+    }
+
+    .add-contact #search {
+      width: calc(100% - 10px);
+      padding: 5px;
+      height: 32px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      border: none;
+      /* background-color: black; */
+    }
+    form button {
+      font-size: 1em;
+      padding: 5px;
+      margin-top: 5px;
+      color: white;
+      background-color: aqua;
+      border-radius: 6px;
+      border: none;
+      width: 100px;
+    }
+
+    .container .contacts {
+      /* border: 1px solid red; */
+      height: 70vh;
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+      /* overflow: scroll; */
+      /* overflow: hidden; */
+      /* overflow-x: hidden; */
+      overflow-y: scroll;
+    }
+    .container .contact {
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: calc(100% - 10px);
+      padding: 4px 5px;
+      background-color: rgb(136, 143, 246);
+      /* margin-top: ; */
+    }
+    .contact span p:first-child {
+      margin-bottom: -5px;
+      font-size: large;
+      text-transform: capitalize;
+    }
+    .contact span p {
+      color: white;
+      border: none;
+
+      /* margin-bottom: -5px; */
+    }
+    .contact p {
+      padding: 5px 9px;
+
+      border-radius: 50%;
+      color: rgb(4, 4, 4);
+      border: 2px solid black;
+    }
+    .contacts .contact button {
+      border-radius: 6px;
+      font-size: medium;
+      border: none;
+      padding: 8px 10px;
+      background-color: red;
+      color: white;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <h1 id="title">Contact Book</h1>
+      <section className="header">
+        <div class="add-contact">
+          <form action="" onsubmit="addContact()">
+            <input type="text" placeholder="Name" id="Cname" required /><br />
+            <input
+              type="number"
+              placeholder="Number"
+              id="Cphone"
+              minlength="8"
+              required
+            /><br />
+
+            <button type="submit">Add</button>
+          </form>
+          <input
+            type="text"
+            placeholder="Search Here"
+            oninput="searchinpute()"
+            id="search"
+          />
+        </div>
+      </section>
+      <section class="contacts" id="contacts"></section>
+    </div>
+    <script>
+      const srch_inpute = document.getElementById("search");
+      const Cname = document.getElementById("Cname");
+      const Cphone = document.getElementById("Cphone");
+
+      const container = document.getElementById("contacts");
+      const delBtn = document.getElementById("delbtn");
+      let contacts;
+
+      function getData() {
+        container.innerHTML = " ";
+        contacts = JSON.parse(localStorage.getItem("contacts"));
+        // console.log(contacts);
+        for (let i = 0; i < contacts.length; i++) {
+          container.innerHTML += `
+          <div class="contact">
+          <p class="index">${i + 1}</p>
+          <span>
+            <p>${contacts[i].name}</p>
+            <p>${contacts[i].num}</p>
+          </span>
+          <button id="delbtn" onClick="DeleteContact(${i})">Delete</button>
+        </div>`;
+        }
+      }
+
+      function addContact() {
+        let phone = Cphone.value;
+        let name = Cname.value;
+
+        let dataa = JSON.parse(localStorage.getItem("contacts"));
+        if (dataa === null) {
+          con_obj = [];
+        } else {
+          con_obj = dataa;
+        }
+
+        cur_obj = { name: name, num: phone };
+        con_obj.push(cur_obj);
+        localStorage.setItem("contacts", JSON.stringify(con_obj));
+        getData();
+      }
+
+      function DeleteContact(index) {
+        let dataa = JSON.parse(localStorage.getItem("contacts"));
+        con_obj = dataa;
+        con_obj.splice(index, 1);
+        localStorage.setItem("contacts", JSON.stringify(con_obj));
+        getData();
+        // console.log("delete");
+      }
+
+      function searchinpute() {
+        container.innerHTML = "";
+        contacts.map((value, index) => {
+          // console.log(value.name);
+          // console.log(srch_inpute.value);
+          let srchin = srch_inpute.value;
+          if (srchin.toUpperCase() === value.name.toUpperCase()) {
+            // console.log(value);
+            container.innerHTML += `
+          <div class="contact">
+          <p class="index">${index + 1}</p>
+          <span>
+            <p>${value.name}</p>
+            <p>${value.num}</p>
+          </span>
+          <button id="delbtn" onClick="DeleteContact(${index})">Delete</button>
+        </div>`;
+            // console.log("yes");
+          } else {
+            // container.innerText = "Contact Not Found!";
+            // console.log("no");
+          }
+        });
+        if (srch_inpute.value == "") {
+          getData();
+        }
+        if (container.innerText == "") {
+          container.innerText = "Contact is not Found";
+        }
+      }
+
+      getData();
+    </script>
+  </body>
+</html>
